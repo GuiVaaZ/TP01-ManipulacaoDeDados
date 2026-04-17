@@ -1,22 +1,19 @@
-import os
-import csv
-import time
-import glob
-import threading
-import multiprocessing
+import os, csv, time, glob, threading, multiprocessing
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from collections import defaultdict
 
+# Diretório padrão de saída
+DIR_SAIDA = "saida"
+
+def garantir_diretorio_saida():
+    os.makedirs(DIR_SAIDA, exist_ok=True)
 
 #Utilitarios
-
 def encontrar_arquivos_csv(diretorio="."):
-    """Retorna lista de todos os arquivos .csv no diretório."""
     return glob.glob(os.path.join(diretorio, "*.csv"))
 
 
 def ler_csv(caminho):
-    """Lê um arquivo CSV e retorna lista de dicionários."""
     linhas = []
     try:
         with open(caminho, newline='', encoding='utf-8') as f:
@@ -29,11 +26,14 @@ def ler_csv(caminho):
 
 #Salva lista de dicionários em arquivo CSV
 def salvar_csv(caminho, dados, campos):
-    with open(caminho, 'w', newline='', encoding='utf-8') as f:
+    garantir_diretorio_saida()
+    caminho_completo = os.path.join(DIR_SAIDA, caminho)
+
+    with open(caminho_completo, 'w', newline='', encoding='utf-8') as f:
         writer = csv.DictWriter(f, fieldnames=campos)
         writer.writeheader()
         writer.writerows(dados)
-    print(f"Arquivo salvo: {caminho}")
+    print(f"Arquivo salvo: {caminho_completo}")
 
 #Converte valor para float de forma segura.
 def safe_float(valor):
@@ -96,11 +96,6 @@ def calcular_metas_grupo(rows):
     }
 
 # CONCATENAR ARQUIVOS CSV
-    """
-    Concatena todos os arquivos CSV do diretório em um único arquivo.
-    Versão serial.
-    """
-
 def func1_serial(diretorio="."):
     inicio = time.perf_counter()
     arquivos = encontrar_arquivos_csv(diretorio)
@@ -128,11 +123,10 @@ def func1_serial(diretorio="."):
 def _ler_arquivo_worker(caminho):
     return ler_csv(caminho)
 
-
-    """
-    Concatena todos os arquivos CSV do diretório em um único arquivo.
-    Versão paralela (ThreadPoolExecutor).
-    """
+"""
+Concatena todos os arquivos CSV do diretório em um único arquivo.
+Versão paralela (ThreadPoolExecutor).
+"""
 def func1_paralela(diretorio="."):
     inicio = time.perf_counter()
     arquivos = encontrar_arquivos_csv(diretorio)
