@@ -82,7 +82,7 @@ python main.py
 
 **3. Informe o diretório com os arquivos CSV** (ou pressione `Enter` para usar a pasta atual — recomendado apontar para `Base-de-dados/`):
 ```
-Diretório com os arquivos CSV (Enter para diretório atual): Base-de-dados
+Diretório com os arquivos CSV (Enter para diretório atual): .\Base-de-dados
 ```
 
 **4. Escolha a funcionalidade no menu interativo:**
